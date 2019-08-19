@@ -7,39 +7,53 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.PlayerInventory;
+import org.jetbrains.annotations.Nullable;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+
+/**
+ * Aggregates multiple functions useful in
+ * calculating player distance or updating inventories.
+ */
 public final class CompassUtils {
     
-    private Player getNearestPlayer(Player p, Double range) {
-        Player nearest = p.getWorld().getPlayers().stream()
-            .filter(t -> t != p)
-            .filter(t -> !t.getGameMode().equals(GameMode.SPECTATOR))
-            .sorted(Comparator.comparing(t -> t.getLocation().distance(p.getLocation())))
+    /**
+     * Gets the player the closest to another player.
+     * @param player Player to query
+     * @return The nearest player or null, if no one was found.
+     */
+    @Nullable
+    private Player getNearestPlayer(Player player) {
+        return player.getWorld().getPlayers().stream()
+            .filter(candidate -> candidate != player)
+            .filter(candidate -> !candidate.getGameMode().equals(GameMode.SPECTATOR))
+            .sorted(Comparator.comparing(
+                candidate -> candidate.getLocation().distanceSquared(player.getLocation())))
             .findFirst().orElse(null);
-
-        if (nearest == null) return null;
-        if (nearest.getLocation().distance(p.getLocation()) > range) return null;
-        return nearest;
     }
     
-    private void updateCompass(Player p) {
+    /**
+     * Updates the player's compass target
+     * and shows them an action bar with details.
+     * @param player The player who will have their compass updated.
+     */
+    private void updateCompass(Player player) {
 
         // If player is offline or doesn't have a compass, do nothing
-        if (!p.isOnline() || !p.getInventory().contains(Material.COMPASS))
+        if (!player.isOnline() || !player.getInventory().contains(Material.COMPASS))
             return;
         
-        Player nearestPlayer = getNearestPlayer(p, 500.0);
+        Player nearestPlayer = getNearestPlayer(player);
         String compassName;
 
-        // A player was found within the range
+        // A player was found
         if (nearestPlayer != null) {
             Location nearestLocation = nearestPlayer.getLocation();
-            p.setCompassTarget(nearestLocation);
-            double distance = nearestLocation.distance(p.getLocation());
+            player.setCompassTarget(nearestLocation);
+            double distance = nearestLocation.distance(player.getLocation());
             compassName = ChatColor.YELLOW + ""
             + ChatColor.BOLD + "Gracz: "
             + ChatColor.WHITE + nearestPlayer.getName()
@@ -47,23 +61,28 @@ public final class CompassUtils {
             + ChatColor.BOLD + "Odleglosc: "
             + ChatColor.WHITE + String.format("%.1f", distance);
         }
-        // No player was found in the range
+        // No player was found
         else {
             compassName = ChatColor.YELLOW + ""
             + ChatColor.BOLD + "Gracz: "
             + ChatColor.WHITE + "Brak";
         }
-            
-        // Update every compass in the player's inventory
-        for (ItemStack item : p.getInventory().getContents()) {
-            if (item != null && item.getType().equals(Material.COMPASS)) {
-                ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(compassName);
-                item.setItemMeta(meta);
-            }
+
+        PlayerInventory inventory = player.getInventory();
+
+        // If the player is holding a compass, update their action bar
+        if (inventory.getItemInOffHand().getType().equals(Material.COMPASS)
+        || inventory.getItemInMainHand().getType().equals(Material.COMPASS)) {
+            player.spigot().sendMessage(
+                ChatMessageType.ACTION_BAR,
+                TextComponent.fromLegacyText(compassName));
         }
     }
 
+    /**
+     * Update all compasses on the server.
+     * @param server The server to update.
+     */
     public void updateServer(Server server) {
         for (Player p : server.getOnlinePlayers()) {
             updateCompass(p);
