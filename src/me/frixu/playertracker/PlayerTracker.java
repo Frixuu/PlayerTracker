@@ -22,7 +22,7 @@ public class PlayerTracker extends JavaPlugin {
                 utils.updateServer(server);
             }
         };
-        compassUpdater.runTaskTimer(this, 0, 20);
+        compassUpdater.runTaskTimer(this, 0, 15);
         getLogger().info("Frixu's PlayerTracker is enabled!");
     }
 
