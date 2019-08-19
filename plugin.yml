@@ -5,6 +5,3 @@ author: Frixu
 api-version: "1.14"
 commands:
 permissions:
-  frixutracker.ignoreme:
-    description: Players with this permission will not be tracked.
-    default: false
