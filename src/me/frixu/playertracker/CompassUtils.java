@@ -30,6 +30,7 @@ public final class CompassUtils {
         return player.getWorld().getPlayers().stream()
             .filter(candidate -> candidate != player)
             .filter(candidate -> !candidate.getGameMode().equals(GameMode.SPECTATOR))
+            .filter(candidate -> !player.spigot().getHiddenPlayers().contains(candidate))
             .sorted(Comparator.comparing(
                 candidate -> candidate.getLocation().distanceSquared(player.getLocation())))
             .findFirst().orElse(null);
