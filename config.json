@@ -1,0 +1,12 @@
+{
+    "tracker": {
+        "trackHidden": false,
+        "trackInvisible": true,
+        "trackSpectators": false
+    },
+    "messages": {
+        "templateFound": "%e%lPlayer: %f{{name}} %e%lDistance: %f{{distance}}m",
+        "templateMissing": "%e%lPlayer: %fNone"
+    },
+    "updateTickInterval": 15
+}
