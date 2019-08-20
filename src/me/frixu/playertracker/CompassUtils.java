@@ -1,17 +1,22 @@
 package me.frixu.playertracker;
 
+import static net.md_5.bungee.api.ChatMessageType.ACTION_BAR;
+
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import net.md_5.bungee.api.ChatMessageType;
+import me.frixu.playertracker.config.PlayerTrackerConfig;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
@@ -26,13 +31,25 @@ public final class CompassUtils {
      * @return The nearest player or null, if no one was found.
      */
     @Nullable
-    private Player getNearestPlayer(Player player) {
-        return player.getWorld().getPlayers().stream()
-            .filter(candidate -> candidate != player)
-            .filter(candidate -> !candidate.getGameMode().equals(GameMode.SPECTATOR))
-            .filter(candidate -> !player.spigot().getHiddenPlayers().contains(candidate))
-            .sorted(Comparator.comparing(
-                candidate -> candidate.getLocation().distanceSquared(player.getLocation())))
+    private static Player getNearestPlayer(@NotNull Player player, PlayerTrackerConfig config) {
+        Stream<Player> players = player.getWorld().getPlayers().stream();
+        players = players.filter(other -> other != player);
+
+        if (!config.tracker.trackSpectators)
+            players = players.filter(
+                other -> !other.getGameMode().equals(GameMode.SPECTATOR));
+            
+        if (!config.tracker.trackHidden)
+            players = players.filter(
+                other -> !player.spigot().getHiddenPlayers().contains(other));
+
+        if (!config.tracker.trackInvisible)
+            players = players.filter(
+                other -> !other.getActivePotionEffects().stream()
+                    .anyMatch(e -> e.getType().equals(PotionEffectType.INVISIBILITY)));
+            
+        return players.sorted(Comparator.comparing(
+            candidate -> candidate.getLocation().distanceSquared(player.getLocation())))
             .findFirst().orElse(null);
     }
     
@@ -41,52 +58,42 @@ public final class CompassUtils {
      * and shows them an action bar with details.
      * @param player The player who will have their compass updated.
      */
-    private void updateCompass(Player player) {
+    public static void updateCompass(@NotNull Player player, PlayerTrackerConfig config) {
 
         // If player is offline or doesn't have a compass, do nothing
         if (!player.isOnline() || !player.getInventory().contains(Material.COMPASS))
             return;
         
-        Player nearestPlayer = getNearestPlayer(player);
-        String compassName;
+        Player nearestPlayer = getNearestPlayer(player, config);
+        String trackerText = config.messages.templateMissing;
 
         // A player was found
         if (nearestPlayer != null) {
             Location nearestLocation = nearestPlayer.getLocation();
             player.setCompassTarget(nearestLocation);
             double distance = nearestLocation.distance(player.getLocation());
-            compassName = ChatColor.YELLOW + ""
-            + ChatColor.BOLD + "Gracz: "
-            + ChatColor.WHITE + nearestPlayer.getName()
-            + ChatColor.YELLOW + " "
-            + ChatColor.BOLD + "Odleglosc: "
-            + ChatColor.WHITE + String.format("%.1f", distance);
-        }
-        // No player was found
-        else {
-            compassName = ChatColor.YELLOW + ""
-            + ChatColor.BOLD + "Gracz: "
-            + ChatColor.WHITE + "Brak";
+            trackerText = config.messages.templateFound
+                .replace("{{name}}", nearestPlayer.getName())
+                .replace("{{distance}}", String.format("%.1f", distance));
         }
 
         PlayerInventory inventory = player.getInventory();
+        BaseComponent[] message = TextComponent.fromLegacyText(
+            ChatColor.translateAlternateColorCodes('%', trackerText));
 
         // If the player is holding a compass, update their action bar
         if (inventory.getItemInOffHand().getType().equals(Material.COMPASS)
         || inventory.getItemInMainHand().getType().equals(Material.COMPASS)) {
-            player.spigot().sendMessage(
-                ChatMessageType.ACTION_BAR,
-                TextComponent.fromLegacyText(compassName));
+            player.spigot().sendMessage(ACTION_BAR, message);
         }
     }
 
     /**
      * Update all compasses on the server.
-     * @param server The server to update.
      */
-    public void updateServer(Server server) {
-        for (Player p : server.getOnlinePlayers()) {
-            updateCompass(p);
+    public static void updateServer(PlayerTrackerPlugin plugin) {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            updateCompass(player, plugin.getTrackerConfig());
         }
     }
 }
