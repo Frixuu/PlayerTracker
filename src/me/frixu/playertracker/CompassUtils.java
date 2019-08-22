@@ -39,29 +39,34 @@ public final class CompassUtils {
         players = players.filter(other -> other != player);
         
         if (!config.tracker.trackSpectators)
-        players = players.filter(
-            other -> !other.getGameMode().equals(GameMode.SPECTATOR));
+        players = players.filter(other ->
+            !other.getGameMode().equals(GameMode.SPECTATOR)
+        );
         
         if (!config.tracker.trackHidden)
-        players = players.filter(
-            other -> !player.spigot().getHiddenPlayers().contains(other));
+        players = players.filter(other ->
+            !player.spigot().getHiddenPlayers().contains(other)
+        );
         
         if (!config.tracker.trackInvisible)
-        players = players.filter(
-            other -> !other.getActivePotionEffects().stream()
-                .anyMatch(e -> e.getType().equals(PotionEffectType.INVISIBILITY)));
+        players = players.filter(other ->
+            !other.getActivePotionEffects().stream()
+                .anyMatch(e -> e.getType().equals(PotionEffectType.INVISIBILITY))
+        );
         
         if (!config.tracker.trackTeamScoreboard)
-        players = players.filter(
-            other -> {
-                Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
-                if (playerTeam == null) return true;
-                return !playerTeam.hasEntry(other.getName());
-            });
+        players = players.filter(other -> {
+            Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
+            if (playerTeam == null) return true;
+            return !playerTeam.hasEntry(other.getName());
+        });
         
-        // TODO Implement color checking
         if (!config.tracker.trackSameColor)
-        players = players.filter(other -> true);
+        players = players.filter(other -> {
+            String otherColor = other.getPlayerListName().replace(other.getName(), "");
+            String myColor = player.getPlayerListName().replace(player.getName(), "");
+            return !myColor.equals(otherColor);
+        });
         
         return players.sorted(Comparator.comparing(
             candidate -> candidate.getLocation().distanceSquared(player.getLocation())))
