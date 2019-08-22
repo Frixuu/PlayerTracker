@@ -54,9 +54,9 @@ public final class CompassUtils {
         if (!config.tracker.trackTeamScoreboard)
         players = players.filter(
             other -> {
-                Team playerTeam = player.getScoreboard().getPlayerTeam(player);
+                Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
                 if (playerTeam == null) return true;
-                return !playerTeam.hasPlayer(other);
+                return !playerTeam.hasEntry(other.getName());
             });
         
         // TODO Implement color checking
@@ -64,8 +64,8 @@ public final class CompassUtils {
         players = players.filter(other -> true);
         
         return players.sorted(Comparator.comparing(
-        candidate -> candidate.getLocation().distanceSquared(player.getLocation())))
-        .findFirst().orElse(null);
+            candidate -> candidate.getLocation().distanceSquared(player.getLocation())))
+                .findFirst().orElse(null);
     }
     
     /**
