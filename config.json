@@ -2,7 +2,9 @@
     "tracker": {
         "trackHidden": false,
         "trackInvisible": true,
-        "trackSpectators": false
+        "trackSpectators": false,
+        "trackTeamScoreboard": false,
+        "trackSameColor": false
     },
     "messages": {
         "templateFound": "%e%lPlayer: %f{{name}} %e%lDistance: %f{{distance}}m",

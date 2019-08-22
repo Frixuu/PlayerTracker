@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,6 +48,18 @@ public final class CompassUtils {
             players = players.filter(
                 other -> !other.getActivePotionEffects().stream()
                     .anyMatch(e -> e.getType().equals(PotionEffectType.INVISIBILITY)));
+
+        if (!config.tracker.trackTeamScoreboard)
+            players = players.filter(
+                other -> {
+                    Team playerTeam = player.getScoreboard().getPlayerTeam(player);
+                    if (playerTeam == null) return true;
+                    return !playerTeam.hasPlayer(other);
+                });
+        
+        // TODO Implement color checking
+        if (!config.tracker.trackSameColor)
+                players = players.filter(other -> true);
             
         return players.sorted(Comparator.comparing(
             candidate -> candidate.getLocation().distanceSquared(player.getLocation())))
