@@ -93,7 +93,7 @@ public final class CompassUtils {
             player.setCompassTarget(nearestLocation);
             double distance = nearestLocation.distance(player.getLocation());
             trackerText = config.messages.templateFound
-            .replace("{{name}}", nearestPlayer.getName())
+            .replace("{{name}}", nearestPlayer.getPlayerListName())
             .replace("{{distance}}", String.format("%.1f", distance));
         }
         
