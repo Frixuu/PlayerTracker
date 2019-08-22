@@ -94,7 +94,8 @@ public final class CompassUtils {
             double distance = nearestLocation.distance(player.getLocation());
             trackerText = config.messages.templateFound
             .replace("{{name}}", nearestPlayer.getPlayerListName())
-            .replace("{{distance}}", String.format("%.1f", distance));
+            .replace("{{distance}}", String.format("%.1f", distance))
+            .replace("{{distanceft}}", String.format("%.1f", distance * 3.28084f));
         }
         
         PlayerInventory inventory = player.getInventory();
