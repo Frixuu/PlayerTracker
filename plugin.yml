@@ -1,6 +1,0 @@
-main: me.frixu.playertracker.PlayerTrackerPlugin
-name: PlayerTracker
-version: "0.2.3"
-author: Frixu
-commands:
-permissions:

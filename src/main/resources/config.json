@@ -4,12 +4,14 @@
         "trackInvisible": true,
         "trackSpectators": false,
         "trackTeamScoreboard": false,
-        "trackSameColor": true
+        "trackSameColor": true,
+        "trackOtherColors": true
     },
     "messages": {
         "templateFound": "%e%lPlayer: %f{{name}} %e%lDistance: %f{{distance}}m",
         "templateMissing": "%e%lPlayer: %fNone"
     },
     "updateTickInterval": 15,
-    "displayMethod": "ITEM_NAME"
+    "displayMethod": "ITEM_NAME",
+    "bStats": true
 }
