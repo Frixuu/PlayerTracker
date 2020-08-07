@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 import static java.util.Comparator.comparing;
 import static net.md_5.bungee.api.ChatMessageType.ACTION_BAR;
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
-import static org.bukkit.Material.COMPASS;
 
 /**
 * Aggregates multiple functions useful in
@@ -29,6 +28,7 @@ import static org.bukkit.Material.COMPASS;
 public final class CompassUtils {
 
     private static final double FEET_IN_METER = 3.28084;
+    private static final Material COMPASS = Material.getMaterial("COMPASS");
 
     /**
     * Gets the player the closest to another player.
