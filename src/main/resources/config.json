@@ -11,5 +11,6 @@
         "templateMissing": "%e%lPlayer: %fNone"
     },
     "updateTickInterval": 15,
-    "displayMethod": "ITEM_NAME"
+    "displayMethod": "ITEM_NAME",
+    "bStats": true
 }

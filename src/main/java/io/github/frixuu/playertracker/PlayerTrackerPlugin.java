@@ -6,6 +6,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
 import lombok.Getter;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -46,6 +47,11 @@ public class PlayerTrackerPlugin extends JavaPlugin {
         } catch (FileNotFoundException e) {
 			getLogger().severe("The config file mysteriously disappeared.");
 		}
+
+        if (trackerConfig != null && trackerConfig.isTelemetryActive()) {
+            final int pluginId = 8456;
+            Metrics metrics = new Metrics(this, pluginId);
+        }
 
         // Set up a repeating task
         compassUpdater = new BukkitRunnable() {

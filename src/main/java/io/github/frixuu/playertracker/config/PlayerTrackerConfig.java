@@ -1,5 +1,6 @@
 package io.github.frixuu.playertracker.config;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 
 @Data
@@ -9,4 +10,6 @@ public class PlayerTrackerConfig {
     public MessageOptions messages;
     public long updateTickInterval;
     public DisplayMethod displayMethod;
+    @SerializedName("bStats")
+    public boolean telemetryActive;
 }
