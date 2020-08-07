@@ -6,13 +6,15 @@ import lombok.Data;
 @Data
 public class TrackerOptions {
     @SerializedName("trackHidden")
-    public boolean trackingHidden;
+    public boolean trackingHidden = true;
     @SerializedName("trackInvisible")
-    public boolean trackingInvisible;
+    public boolean trackingInvisible = true;
     @SerializedName("trackSpectators")
-    public boolean trackingSpectators;
+    public boolean trackingSpectators = true;
     @SerializedName("trackTeamScoreboard")
-    public boolean trackingTeamScoreboard;
+    public boolean trackingTeamScoreboard = true;
     @SerializedName("trackSameColor")
-    public boolean trackingSameColor;
+    public boolean trackingSameColor = true;
+    @SerializedName("trackOtherColors")
+    public boolean trackingOtherColors = true;
 }

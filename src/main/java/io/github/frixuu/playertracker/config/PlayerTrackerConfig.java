@@ -11,5 +11,5 @@ public class PlayerTrackerConfig {
     public long updateTickInterval;
     public DisplayMethod displayMethod;
     @SerializedName("bStats")
-    public boolean telemetryActive;
+    public boolean telemetryActive = true;
 }

@@ -4,7 +4,8 @@
         "trackInvisible": true,
         "trackSpectators": false,
         "trackTeamScoreboard": false,
-        "trackSameColor": true
+        "trackSameColor": true,
+        "trackOtherColors": true
     },
     "messages": {
         "templateFound": "%e%lPlayer: %f{{name}} %e%lDistance: %f{{distance}}m",

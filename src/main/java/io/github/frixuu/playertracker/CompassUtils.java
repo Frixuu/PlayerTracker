@@ -74,6 +74,14 @@ public final class CompassUtils {
                 return !myColor.equals(otherColor);
             });
         }
+
+        if (!config.getTracker().isTrackingOtherColors()) {
+            players = players.filter(other -> {
+                String otherColor = other.getPlayerListName().replace(other.getName(), "");
+                String myColor = player.getPlayerListName().replace(player.getName(), "");
+                return myColor.equals(otherColor);
+            });
+        }
         
         return players.min(comparing(
             candidate -> candidate.getLocation().distanceSquared(player.getLocation())));
