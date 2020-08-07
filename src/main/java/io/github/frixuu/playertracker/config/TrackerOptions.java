@@ -1,4 +1,4 @@
-package me.frixu.playertracker.config;
+package io.github.frixuu.playertracker.config;
 
 public class TrackerOptions {
     public boolean trackHidden;

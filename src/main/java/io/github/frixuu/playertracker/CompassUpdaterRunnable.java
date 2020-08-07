@@ -1,4 +1,4 @@
-package me.frixu.playertracker;
+package io.github.frixuu.playertracker;
 
 import org.bukkit.scheduler.BukkitRunnable;
 

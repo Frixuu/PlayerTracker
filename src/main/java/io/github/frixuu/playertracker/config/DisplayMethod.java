@@ -1,4 +1,4 @@
-package me.frixu.playertracker.config;
+package io.github.frixuu.playertracker.config;
 
 public enum DisplayMethod {
     ACTION_BAR,

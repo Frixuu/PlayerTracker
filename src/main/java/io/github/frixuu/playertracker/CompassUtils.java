@@ -1,4 +1,4 @@
-package me.frixu.playertracker;
+package io.github.frixuu.playertracker;
 
 import static net.md_5.bungee.api.ChatMessageType.ACTION_BAR;
 import static org.bukkit.Material.COMPASS;
@@ -18,7 +18,7 @@ import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import me.frixu.playertracker.config.PlayerTrackerConfig;
+import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 

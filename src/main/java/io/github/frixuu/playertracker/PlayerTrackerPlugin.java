@@ -1,4 +1,4 @@
-package me.frixu.playertracker;
+package io.github.frixuu.playertracker;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,7 +11,7 @@ import com.google.gson.JsonSyntaxException;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.frixu.playertracker.config.PlayerTrackerConfig;
+import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
 
 /**
  * This plugin, which makes players' compasses track other people.

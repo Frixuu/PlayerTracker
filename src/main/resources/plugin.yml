@@ -1,0 +1,6 @@
+main: io.github.frixuu.playertracker.PlayerTrackerPlugin
+name: PlayerTracker
+version: "0.3.0"
+author: Frixu
+commands:
+permissions:
