@@ -13,6 +13,8 @@ public class TrackerOptions {
     public boolean trackingSpectators = true;
     @SerializedName("trackTeamScoreboard")
     public boolean trackingTeamScoreboard = true;
+    @SerializedName("trackOtherTeams")
+    public boolean trackingOtherTeams = true;
     @SerializedName("trackSameColor")
     public boolean trackingSameColor = true;
     @SerializedName("trackOtherColors")

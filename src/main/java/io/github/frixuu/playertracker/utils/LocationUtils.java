@@ -43,11 +43,17 @@ public final class LocationUtils {
         }
 
         if (!config.getTracker().isTrackingTeamScoreboard()) {
-            players = players.filter(other -> {
-                Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
-                if (playerTeam == null) return true;
-                return !playerTeam.hasEntry(other.getName());
-            });
+            Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
+            if (playerTeam != null) {
+                players = players.filter(other -> !playerTeam.hasEntry(other.getName()));
+            }
+        }
+
+        if (!config.getTracker().isTrackingOtherTeams()) {
+            Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
+            if (playerTeam != null) {
+                players = players.filter(other -> playerTeam.hasEntry(other.getName()));
+            }
         }
 
         if (!config.getTracker().isTrackingSameColor()) {

@@ -4,6 +4,7 @@
         "trackInvisible": true,
         "trackSpectators": false,
         "trackTeamScoreboard": false,
+        "trackOtherTeams": true,
         "trackSameColor": true,
         "trackOtherColors": true
     },
