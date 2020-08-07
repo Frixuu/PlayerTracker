@@ -14,27 +14,29 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Files;
 
+import static io.github.frixuu.playertracker.CompassUtils.updateCompass;
+
 /**
- * This plugin, which makes players' compasses track other people.
+ * This plugin makes players' compasses track other people.
  */
 public class PlayerTrackerPlugin extends JavaPlugin {
 
     /** Synchronous task updating the compasses. */
     private BukkitRunnable compassUpdater;
     /** This plugin's config. */
-    @Getter private PlayerTrackerConfig config;
+    @Getter private PlayerTrackerConfig trackerConfig;
 
     @Override
     public void onEnable() {
         // Try to load config file
-        File configFile = new File(getDataFolder(), "config.json");
+        File configFile = new File(getDataFolder(), PlayerTrackerConfig.FILENAME);
         if (!Files.exists(configFile.toPath())) {
             getLogger().info("Config does not exist. Creating a new one.");
             saveResource(configFile.getName(), false);
         }
         try {
             Gson gson = new GsonBuilder().create();
-            config = gson.fromJson(new FileReader(configFile), PlayerTrackerConfig.class);
+            trackerConfig = gson.fromJson(new FileReader(configFile), PlayerTrackerConfig.class);
         } catch (JsonSyntaxException e) {
             getLogger().severe("Malformed config file. "
             + "Correct it or delete to create a fresh one.");
@@ -47,15 +49,20 @@ public class PlayerTrackerPlugin extends JavaPlugin {
 
         // Set up a repeating task
         compassUpdater = new BukkitRunnable() {
-            @Override public void run() {
-                CompassUtils.updateServer(PlayerTrackerPlugin.this);
+            @Override
+            public void run() {
+                if (getTrackerConfig() != null) {
+                    getServer().getOnlinePlayers()
+                        .forEach(player -> updateCompass(player, getTrackerConfig()));
+                }
             }
         };
-        compassUpdater.runTaskTimer(this, 0, getConfig().updateTickInterval);
+        compassUpdater.runTaskTimer(this, 0, getTrackerConfig().getUpdateTickInterval());
     }
 
     @Override
     public void onDisable() {
         compassUpdater.cancel();
+        trackerConfig = null;
     }
 }

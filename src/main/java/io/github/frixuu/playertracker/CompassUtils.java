@@ -131,15 +131,4 @@ public final class CompassUtils {
                 break;
         }
     }
-    
-    /**
-    * Update all compasses on the server.
-    */
-    public static void updateServer(PlayerTrackerPlugin plugin) {
-        if (plugin.getConfig() != null) {
-            for (Player player : plugin.getServer().getOnlinePlayers()) {
-                updateCompass(player, plugin.getConfig());
-            }
-        }
-    }
 }

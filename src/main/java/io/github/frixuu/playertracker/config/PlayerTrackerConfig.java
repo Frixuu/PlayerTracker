@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class PlayerTrackerConfig {
+    public static final String FILENAME = "config.json";
     public TrackerOptions tracker;
     public MessageOptions messages;
     public long updateTickInterval;
