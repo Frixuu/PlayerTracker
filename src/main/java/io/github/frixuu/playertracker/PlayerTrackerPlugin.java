@@ -15,7 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Files;
 
-import static io.github.frixuu.playertracker.CompassUtils.updateCompass;
+import static io.github.frixuu.playertracker.utils.CompassUtils.updateCompass;
 
 /**
  * This plugin makes players' compasses track other people.
@@ -29,7 +29,6 @@ public class PlayerTrackerPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Try to load config file
         File configFile = new File(getDataFolder(), PlayerTrackerConfig.FILENAME);
         if (!Files.exists(configFile.toPath())) {
             getLogger().info("Config does not exist. Creating a new one.");
@@ -53,7 +52,6 @@ public class PlayerTrackerPlugin extends JavaPlugin {
             MetricsLite metrics = new MetricsLite(this, pluginId);
         }
 
-        // Set up a repeating task
         compassUpdater = new BukkitRunnable() {
             @Override
             public void run() {

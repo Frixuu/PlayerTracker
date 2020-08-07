@@ -1,23 +1,19 @@
-package io.github.frixuu.playertracker;
+package io.github.frixuu.playertracker.utils;
 
 import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static java.util.Comparator.comparing;
+import static io.github.frixuu.playertracker.utils.LocationUtils.getNearestPlayer;
 import static net.md_5.bungee.api.ChatMessageType.ACTION_BAR;
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
@@ -26,66 +22,8 @@ import static org.bukkit.ChatColor.translateAlternateColorCodes;
 * calculating player distance or updating inventories.
 */
 public final class CompassUtils {
-
     private static final double FEET_IN_METER = 3.28084;
     private static final Material COMPASS = Material.getMaterial("COMPASS");
-
-    /**
-    * Gets the player the closest to another player.
-    * @param player Player to query.
-    * @return The nearest player or empty optional, if no players are matched.
-    */
-    private static @NotNull Optional<Player> getNearestPlayer(@NotNull Player player, @NotNull PlayerTrackerConfig config) {
-        Stream<Player> players = player.getWorld().getPlayers()
-            .stream()
-            .filter(other -> other != player);
-        
-        if (!config.getTracker().isTrackingSpectators()) {
-            players = players.filter(other ->
-                !other.getGameMode().equals(GameMode.SPECTATOR)
-            );
-        }
-        
-        if (!config.getTracker().isTrackingHidden()) {
-            players = players.filter(other ->
-                !player.spigot().getHiddenPlayers().contains(other)
-            );
-        }
-        
-        if (!config.getTracker().isTrackingInvisible()) {
-            players = players.filter(other ->
-                other.getActivePotionEffects().stream()
-                    .noneMatch(e -> e.getType().equals(PotionEffectType.INVISIBILITY))
-            );
-        }
-        
-        if (!config.getTracker().isTrackingTeamScoreboard()) {
-            players = players.filter(other -> {
-                Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
-                if (playerTeam == null) return true;
-                return !playerTeam.hasEntry(other.getName());
-            });
-        }
-        
-        if (!config.getTracker().isTrackingSameColor()) {
-            players = players.filter(other -> {
-                String otherColor = other.getPlayerListName().replace(other.getName(), "");
-                String myColor = player.getPlayerListName().replace(player.getName(), "");
-                return !myColor.equals(otherColor);
-            });
-        }
-
-        if (!config.getTracker().isTrackingOtherColors()) {
-            players = players.filter(other -> {
-                String otherColor = other.getPlayerListName().replace(other.getName(), "");
-                String myColor = player.getPlayerListName().replace(player.getName(), "");
-                return myColor.equals(otherColor);
-            });
-        }
-        
-        return players.min(comparing(
-            candidate -> candidate.getLocation().distanceSquared(player.getLocation())));
-    }
 
     /**
      * Creates a custom label for a provided player to display for them in some way.
