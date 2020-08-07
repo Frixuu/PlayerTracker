@@ -126,7 +126,7 @@ public final class CompassUtils {
     */
     public static void updateServer(PlayerTrackerPlugin plugin) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            updateCompass(player, plugin.getTrackerConfig());
+            updateCompass(player, plugin.getConfig());
         }
     }
 }

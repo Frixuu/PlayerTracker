@@ -1,17 +1,18 @@
 package io.github.frixuu.playertracker;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
+import lombok.Getter;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Files;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-
-import org.bukkit.plugin.java.JavaPlugin;
-
-import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
 
 /**
  * This plugin, which makes players' compasses track other people.
@@ -19,9 +20,9 @@ import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
 public class PlayerTrackerPlugin extends JavaPlugin {
 
     /** Synchronous task updating the compasses. */
-    private CompassUpdaterRunnable compassUpdater;
+    private BukkitRunnable compassUpdater;
     /** This plugin's config. */
-    private PlayerTrackerConfig config;
+    @Getter private PlayerTrackerConfig config;
 
     @Override
     public void onEnable() {
@@ -32,7 +33,8 @@ public class PlayerTrackerPlugin extends JavaPlugin {
             saveResource(configFile.getName(), false);
         }
         try {
-            config = new Gson().fromJson(new FileReader(configFile), PlayerTrackerConfig.class);
+            Gson gson = new GsonBuilder().create();
+            config = gson.fromJson(new FileReader(configFile), PlayerTrackerConfig.class);
         } catch (JsonSyntaxException e) {
             getLogger().severe("Malformed config file. "
             + "Correct it or delete to create a fresh one.");
@@ -42,24 +44,18 @@ public class PlayerTrackerPlugin extends JavaPlugin {
         } catch (FileNotFoundException e) {
 			getLogger().severe("The config file mysteriously disappeared.");
 		}
-        // Set up a repeating task
-        compassUpdater = new CompassUpdaterRunnable(this);
-        compassUpdater.runTaskTimer(this, 0, config.updateTickInterval);
-        getLogger().info("Frixu's PlayerTracker is enabled!");
-    }
 
+        // Set up a repeating task
+        compassUpdater = new BukkitRunnable() {
+            @Override public void run() {
+                CompassUtils.updateServer(PlayerTrackerPlugin.this);
+            }
+        };
+        compassUpdater.runTaskTimer(this, 0, getConfig().updateTickInterval);
+    }
 
     @Override
     public void onDisable() {
         compassUpdater.cancel();
-        getLogger().info("Frixu's PlayerTracker is disabled!");
     }
-
-    /**
-     * Gets the plugin config.
-     */
-    public PlayerTrackerConfig getTrackerConfig() {
-        return config;
-    }
-
 }
