@@ -1,5 +1,8 @@
 package io.github.frixuu.playertracker.config;
 
+import lombok.Data;
+
+@Data
 public class TrackerOptions {
     public boolean trackHidden;
     public boolean trackInvisible;
