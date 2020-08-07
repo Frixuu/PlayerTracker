@@ -32,7 +32,7 @@ public final class CompassUtils {
 
     /**
     * Gets the player the closest to another player.
-    * @param player Player to query
+    * @param player Player to query.
     * @return The nearest player or empty optional, if no players are matched.
     */
     private static @NotNull Optional<Player> getNearestPlayer(@NotNull Player player, @NotNull PlayerTrackerConfig config) {
@@ -40,35 +40,40 @@ public final class CompassUtils {
             .stream()
             .filter(other -> other != player);
         
-        if (!config.tracker.trackSpectators)
-        players = players.filter(other ->
-            !other.getGameMode().equals(GameMode.SPECTATOR)
-        );
+        if (!config.getTracker().isTrackingSpectators()) {
+            players = players.filter(other ->
+                !other.getGameMode().equals(GameMode.SPECTATOR)
+            );
+        }
         
-        if (!config.tracker.trackHidden)
-        players = players.filter(other ->
-            !player.spigot().getHiddenPlayers().contains(other)
-        );
+        if (!config.getTracker().isTrackingHidden()) {
+            players = players.filter(other ->
+                !player.spigot().getHiddenPlayers().contains(other)
+            );
+        }
         
-        if (!config.tracker.trackInvisible)
-        players = players.filter(other ->
-            other.getActivePotionEffects().stream()
-                .noneMatch(e -> e.getType().equals(PotionEffectType.INVISIBILITY))
-        );
+        if (!config.getTracker().isTrackingInvisible()) {
+            players = players.filter(other ->
+                other.getActivePotionEffects().stream()
+                    .noneMatch(e -> e.getType().equals(PotionEffectType.INVISIBILITY))
+            );
+        }
         
-        if (!config.tracker.trackTeamScoreboard)
-        players = players.filter(other -> {
-            Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
-            if (playerTeam == null) return true;
-            return !playerTeam.hasEntry(other.getName());
-        });
+        if (!config.getTracker().isTrackingTeamScoreboard()) {
+            players = players.filter(other -> {
+                Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
+                if (playerTeam == null) return true;
+                return !playerTeam.hasEntry(other.getName());
+            });
+        }
         
-        if (!config.tracker.trackSameColor)
-        players = players.filter(other -> {
-            String otherColor = other.getPlayerListName().replace(other.getName(), "");
-            String myColor = player.getPlayerListName().replace(player.getName(), "");
-            return !myColor.equals(otherColor);
-        });
+        if (!config.getTracker().isTrackingSameColor()) {
+            players = players.filter(other -> {
+                String otherColor = other.getPlayerListName().replace(other.getName(), "");
+                String myColor = player.getPlayerListName().replace(player.getName(), "");
+                return !myColor.equals(otherColor);
+            });
+        }
         
         return players.min(comparing(
             candidate -> candidate.getLocation().distanceSquared(player.getLocation())));
