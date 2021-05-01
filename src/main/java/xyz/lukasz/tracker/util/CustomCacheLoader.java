@@ -1,4 +1,4 @@
-package io.github.frixuu.playertracker.util;
+package xyz.lukasz.tracker.util;
 
 import com.google.common.cache.CacheLoader;
 

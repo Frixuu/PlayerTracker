@@ -1,4 +1,4 @@
-package io.github.frixuu.playertracker.config;
+package xyz.lukasz.tracker.config;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;

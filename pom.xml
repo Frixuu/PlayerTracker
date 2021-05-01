@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.frixuu</groupId>
+    <groupId>xyz.lukasz</groupId>
     <artifactId>playertracker</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -33,11 +33,11 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>io.github.frixuu.playertracker.lib.bstats</shadedPattern>
+                            <shadedPattern>xyz.lukasz.tracker.lib.bstats</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.apache.commons.lang3</pattern>
-                            <shadedPattern>io.github.frixuu.playertracker.lib.lang3</shadedPattern>
+                            <shadedPattern>xyz.lukasz.tracker.lib.lang3</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>

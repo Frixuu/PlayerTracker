@@ -1,4 +1,4 @@
-package io.github.frixuu.playertracker.config;
+package xyz.lukasz.tracker.config;
 
 import lombok.Data;
 

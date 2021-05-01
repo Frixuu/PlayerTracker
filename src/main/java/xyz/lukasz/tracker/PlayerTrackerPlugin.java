@@ -1,4 +1,4 @@
-package io.github.frixuu.playertracker;
+package xyz.lukasz.tracker;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
@@ -6,8 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
-import io.github.frixuu.playertracker.util.CustomCacheLoader;
+import xyz.lukasz.tracker.config.PlayerTrackerConfig;
+import xyz.lukasz.tracker.util.Compasses;
+import xyz.lukasz.tracker.util.CustomCacheLoader;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bstats.bukkit.MetricsLite;
@@ -19,8 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.util.UUID;
-
-import static io.github.frixuu.playertracker.util.CompassUtils.updateCompass;
 
 /**
  * This plugin makes players' compasses track other people.
@@ -72,7 +71,7 @@ public class PlayerTrackerPlugin extends JavaPlugin {
             public void run() {
                 if (getTrackerConfig() != null) {
                     getServer().getOnlinePlayers()
-                        .forEach(player -> updateCompass(player, getTrackerConfig()));
+                        .forEach(player -> Compasses.update(player, getTrackerConfig()));
                 }
             }
         };

@@ -1,27 +1,25 @@
-package io.github.frixuu.playertracker.util;
+package xyz.lukasz.tracker.util;
 
-import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import xyz.lukasz.tracker.config.PlayerTrackerConfig;
 
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static io.github.frixuu.playertracker.util.LocationUtils.getNearestPlayer;
 import static net.md_5.bungee.api.ChatMessageType.ACTION_BAR;
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
+import static xyz.lukasz.tracker.util.LocationUtils.getNearestPlayer;
 
 /**
 * Aggregates multiple functions useful in
 * calculating player distance or updating inventories.
 */
-public final class CompassUtils {
+public final class Compasses {
 
     private static final double FEET_IN_METER = 3.28084;
     private static final Material COMPASS = Material.COMPASS;
@@ -54,29 +52,30 @@ public final class CompassUtils {
     * and shows them an action bar with details.
     * @param player The player who will have their compass updated.
     */
-    public static void updateCompass(@NotNull Player player, @NotNull PlayerTrackerConfig config) {
+    public static void update(@NotNull Player player, @NotNull PlayerTrackerConfig config) {
         // If player is offline or doesn't have a compass, do nothing
         if (!player.isOnline() || !player.getInventory().contains(COMPASS)) {
             return;
         }
         
-        final String messageText = createCompassMessage(player, config);
-        final BaseComponent[] messageComponent = TextComponent.fromLegacyText(messageText);
-        PlayerInventory inventory = player.getInventory();
+        final var messageText = createCompassMessage(player, config);
+        final var messageComponent = TextComponent.fromLegacyText(messageText);
+        final var inventory = player.getInventory();
 
         switch (config.getDisplayMethod()) {
             case ACTION_BAR:
-                Material mainHand = inventory.getItemInMainHand().getType();
-                Material offHand = inventory.getItemInOffHand().getType();
+                final var mainHand = inventory.getItemInMainHand().getType();
+                final var offHand = inventory.getItemInOffHand().getType();
                 if (COMPASS.equals(mainHand) || COMPASS.equals(offHand)) {
                     player.spigot().sendMessage(ACTION_BAR, messageComponent);
                 }
                 break;
             case ITEM_NAME:
-                Arrays.stream(inventory.getContents())
-                    .filter(item -> item != null && COMPASS.equals(item.getType()))
+                Stream.of(inventory.getContents())
+                    .filter(Objects::nonNull)
+                    .filter(item -> COMPASS.equals(item.getType()))
                     .forEach(item -> {
-                        ItemMeta meta = item.getItemMeta();
+                        var meta = item.getItemMeta();
                         meta.setDisplayName(messageText);
                         item.setItemMeta(meta);
                     });

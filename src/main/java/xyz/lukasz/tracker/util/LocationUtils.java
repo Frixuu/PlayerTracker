@@ -1,6 +1,6 @@
-package io.github.frixuu.playertracker.util;
+package xyz.lukasz.tracker.util;
 
-import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
+import xyz.lukasz.tracker.config.PlayerTrackerConfig;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;

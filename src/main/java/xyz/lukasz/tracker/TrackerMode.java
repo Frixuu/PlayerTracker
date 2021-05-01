@@ -1,4 +1,4 @@
-package io.github.frixuu.playertracker;
+package xyz.lukasz.tracker;
 
 /**
  * Specifies the way the compass works.
