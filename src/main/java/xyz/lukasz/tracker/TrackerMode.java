@@ -15,5 +15,5 @@ public enum TrackerMode {
      * In this mode the compass only tracks the one person it was told to.
      * The players might or might not be allowed to change the compass' target.
      */
-    ALWAYS_PROVIDED,
+    TARGET_PLAYER,
 }
