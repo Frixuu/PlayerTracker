@@ -1,11 +1,15 @@
 package io.github.frixuu.playertracker;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
+import io.github.frixuu.playertracker.util.CustomCacheLoader;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bstats.bukkit.MetricsLite;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,8 +18,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Files;
+import java.util.UUID;
 
-import static io.github.frixuu.playertracker.utils.CompassUtils.updateCompass;
+import static io.github.frixuu.playertracker.util.CompassUtils.updateCompass;
 
 /**
  * This plugin makes players' compasses track other people.
@@ -24,8 +29,18 @@ public class PlayerTrackerPlugin extends JavaPlugin {
 
     /** Synchronous task updating the compasses. */
     private BukkitRunnable compassUpdater;
+
     /** This plugin's config. */
     @Getter private PlayerTrackerConfig trackerConfig;
+
+    /**
+     * Contains current mode information about players' compasses.
+     */
+    @Getter private final LoadingCache<UUID, Pair<TrackerMode, UUID>> modeMapping
+        = CacheBuilder.newBuilder().build(
+            ((CustomCacheLoader<UUID, Pair<TrackerMode, UUID>>)
+                _uuid -> Pair.of(TrackerMode.NEAREST_PLAYER, null))
+                .into());
 
     @Override
     public void onEnable() {

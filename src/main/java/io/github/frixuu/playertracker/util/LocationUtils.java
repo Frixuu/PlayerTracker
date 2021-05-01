@@ -1,25 +1,25 @@
-package io.github.frixuu.playertracker.utils;
+package io.github.frixuu.playertracker.util;
 
 import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.Optional;
-import java.util.stream.Stream;
-
-import static java.util.Comparator.comparing;
 
 public final class LocationUtils {
+
     /**
      * Gets the player the closest to another player.
      * @param player Player to query.
      * @return The nearest player or empty optional, if no players are matched.
      */
-    public static @NotNull Optional<Player> getNearestPlayer(@NotNull Player player, @NotNull PlayerTrackerConfig config) {
-        Stream<Player> players = player.getWorld().getPlayers()
+    public static @NotNull Optional<Player> getNearestPlayer(@NotNull Player player,
+                                                             @NotNull PlayerTrackerConfig config) {
+
+        var players = player.getWorld().getPlayers()
             .stream()
             .filter(other -> other != player);
 
@@ -43,36 +43,36 @@ public final class LocationUtils {
         }
 
         if (!config.getTracker().isTrackingTeamScoreboard()) {
-            Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
+            final var playerTeam = player.getScoreboard().getEntryTeam(player.getName());
             if (playerTeam != null) {
                 players = players.filter(other -> !playerTeam.hasEntry(other.getName()));
             }
         }
 
         if (!config.getTracker().isTrackingOtherTeams()) {
-            Team playerTeam = player.getScoreboard().getEntryTeam(player.getName());
+            final var playerTeam = player.getScoreboard().getEntryTeam(player.getName());
             if (playerTeam != null) {
                 players = players.filter(other -> playerTeam.hasEntry(other.getName()));
             }
         }
 
         if (!config.getTracker().isTrackingSameColor()) {
-            String myColor = player.getPlayerListName().replace(player.getName(), "");
+            final var myColor = player.getPlayerListName().replace(player.getName(), "");
             players = players.filter(other -> {
-                String otherColor = other.getPlayerListName().replace(other.getName(), "");
+                final var otherColor = other.getPlayerListName().replace(other.getName(), "");
                 return !myColor.equals(otherColor);
             });
         }
 
         if (!config.getTracker().isTrackingOtherColors()) {
-            String myColor = player.getPlayerListName().replace(player.getName(), "");
+            final var myColor = player.getPlayerListName().replace(player.getName(), "");
             players = players.filter(other -> {
-                String otherColor = other.getPlayerListName().replace(other.getName(), "");
+                final var otherColor = other.getPlayerListName().replace(other.getName(), "");
                 return myColor.equals(otherColor);
             });
         }
 
-        return players.min(comparing(
+        return players.min(Comparator.comparing(
             candidate -> candidate.getLocation().distanceSquared(player.getLocation())));
     }
 }

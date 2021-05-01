@@ -1,4 +1,4 @@
-package io.github.frixuu.playertracker.utils;
+package io.github.frixuu.playertracker.util;
 
 import io.github.frixuu.playertracker.config.PlayerTrackerConfig;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static io.github.frixuu.playertracker.utils.LocationUtils.getNearestPlayer;
+import static io.github.frixuu.playertracker.util.LocationUtils.getNearestPlayer;
 import static net.md_5.bungee.api.ChatMessageType.ACTION_BAR;
 import static org.bukkit.ChatColor.translateAlternateColorCodes;
 
@@ -22,8 +22,9 @@ import static org.bukkit.ChatColor.translateAlternateColorCodes;
 * calculating player distance or updating inventories.
 */
 public final class CompassUtils {
+
     private static final double FEET_IN_METER = 3.28084;
-    private static final Material COMPASS = Material.getMaterial("COMPASS");
+    private static final Material COMPASS = Material.COMPASS;
 
     /**
      * Creates a custom label for a provided player to display for them in some way.
