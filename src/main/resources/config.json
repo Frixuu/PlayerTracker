@@ -9,6 +9,7 @@
         "trackOtherColors": true
     },
     "messages": {
+        "cantChangeOverriden": "%cCant change the mode! (Currently overriden)",
         "templateFound": "%e%lPlayer: %f{{name}} %e%lDistance: %f{{distance}}m",
         "templateMissing": "%e%lPlayer: %fNone"
     },

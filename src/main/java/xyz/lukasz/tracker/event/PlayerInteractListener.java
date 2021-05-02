@@ -7,7 +7,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -15,8 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import xyz.lukasz.tracker.ModeManager;
 import xyz.lukasz.tracker.TrackerMode;
 import xyz.lukasz.tracker.config.PlayerTrackerConfig;
-
-import java.util.Arrays;
+import xyz.lukasz.tracker.util.Compasses;
 
 @RequiredArgsConstructor
 public class PlayerInteractListener implements Listener {
@@ -66,25 +64,20 @@ public class PlayerInteractListener implements Listener {
                                 .orElse(null)
                         );
                     } else {
-                        final var targetName = target.getName();
-                        final var sortedOnline = server.getOnlinePlayers()
-                            .stream()
-                            .map(HumanEntity::getName)
-                            .filter(name -> !name.equals(player.getName()))
-                            .sorted()
-                            .toArray(String[]::new);
+                        final var newTarget = Compasses.chooseNext(
+                            player.getWorld().getPlayers(),
+                            player,
+                            target.getName(),
+                            config.getTracker());
 
-                        if (sortedOnline.length < 2) {
-                            break;
+                        if (newTarget.isPresent()) {
+                            currentSettings.setCurrentTarget(newTarget.get().getUniqueId());
+                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                                TextComponent.fromLegacyText("Śledzisz teraz " + newTarget.get().getName() + "!"));
+                        } else {
+                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                                TextComponent.fromLegacyText("Nie można wybrać innej osoby!"));
                         }
-
-                        final var newTargetName = sortedOnline[sortedOnline.length - 1].equals(targetName)
-                            ? sortedOnline[0]
-                            : sortedOnline[Arrays.binarySearch(sortedOnline, targetName) + 1];
-
-                        currentSettings.setCurrentTarget(server.getPlayer(newTargetName).getUniqueId());
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                            TextComponent.fromLegacyText("Śledzisz teraz " + newTargetName + "!"));
                     }
                 } else {
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR,

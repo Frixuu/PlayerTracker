@@ -3,10 +3,16 @@ package xyz.lukasz.tracker.util;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import xyz.lukasz.tracker.TrackerSettings;
 import xyz.lukasz.tracker.config.PlayerTrackerConfig;
+import xyz.lukasz.tracker.config.TrackerOptions;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,21 +36,82 @@ public final class Compasses {
      * @param config Plugin configuration.
      * @return A message to display.
      */
-    public static @NotNull String createCompassMessage(@NotNull Player player, @NotNull PlayerTrackerConfig config) {
-        String trackerText = config.getMessages().getTemplateMissing();
-        final Optional<Player> nearestPlayer = getNearestPlayer(player, config);
+    public static @NotNull String createCompassMessage(@NotNull Player player,
+                                                       @NotNull PlayerTrackerConfig config,
+                                                       @NotNull TrackerSettings settings) {
 
-        if (nearestPlayer.isPresent()) {
-            Location nearestLocation = nearestPlayer.get().getLocation();
-            player.setCompassTarget(nearestLocation);
-            double distance = nearestLocation.distance(player.getLocation());
-            trackerText = config.getMessages().getTemplateFound()
-                .replace("{{name}}", nearestPlayer.get().getPlayerListName())
-                .replace("{{distance}}", String.format("%.1f", distance))
-                .replace("{{distanceft}}", String.format("%.1f", distance * FEET_IN_METER));
+        String trackerText = config.getMessages().getTemplateMissing();
+
+        switch (settings.getMode()) {
+            case NEAREST_PLAYER:
+                final var nearestPlayer = getNearestPlayer(player, config);
+                if (nearestPlayer.isPresent()) {
+                    Location nearestLocation = nearestPlayer.get().getLocation();
+                    player.setCompassTarget(nearestLocation);
+                    double distance = nearestLocation.distance(player.getLocation());
+                    trackerText = config.getMessages().getTemplateFound()
+                        .replace("{{name}}", nearestPlayer.get().getPlayerListName())
+                        .replace("{{distance}}", String.format("%.1f", distance))
+                        .replace("{{distanceft}}", String.format("%.1f", distance * FEET_IN_METER));
+                }
+                break;
+            case TARGET_PLAYER:
+                final var server = player.getServer();
+                var target = server.getPlayer(settings.getCurrentTarget());
+                if (target == null) {
+                    final var newTarget = chooseNext(
+                        player.getWorld().getPlayers(),
+                        player,
+                        null,
+                        config.getTracker());
+                    if (newTarget.isEmpty()) {
+                        trackerText = "%l%cBrak graczy!";
+                        break;
+                    } else {
+                        target = newTarget.get();
+                    }
+                }
+
+                final var distance = target.getLocation().distance(player.getLocation());
+                trackerText = "%r{{name}} - {{distance}}m"
+                    .replace("{{name}}", target.getName())
+                    .replace("{{distance}}", String.format("%.1f", distance))
+                    .replace("{{distanceft}}", String.format("%.1f", distance * FEET_IN_METER));
+                break;
         }
 
         return translateAlternateColorCodes('%', trackerText);
+    }
+
+    public static Optional<? extends Player> chooseNext(
+        @NotNull Collection<? extends Player> candidates,
+        @NotNull Player owner,
+        @Nullable String oldName,
+        TrackerOptions config) {
+
+        if (oldName == null) {
+            return candidates.stream()
+                .filter(c -> Filters.canBeTracked(owner, c, config))
+                .findAny();
+        } else {
+            final var sorted = candidates
+                .stream()
+                .filter(c -> Filters.canBeTracked(owner, c, config))
+                .map(HumanEntity::getName)
+                .filter(name -> !name.equals(owner.getName()))
+                .sorted()
+                .toArray(String[]::new);
+
+            if (sorted.length < 2) {
+                return Optional.empty();
+            }
+
+            final var newTargetName = sorted[sorted.length - 1].equals(oldName)
+                ? sorted[0]
+                : sorted[Arrays.binarySearch(sorted, oldName) + 1];
+
+            return candidates.stream().filter(p -> p.getName().equals(newTargetName)).findAny();
+        }
     }
 
     /**
@@ -52,13 +119,16 @@ public final class Compasses {
     * and shows them an action bar with details.
     * @param player The player who will have their compass updated.
     */
-    public static void update(@NotNull Player player, @NotNull PlayerTrackerConfig config) {
+    public static void update(@NotNull Player player,
+                              @NotNull PlayerTrackerConfig config,
+                              @NotNull TrackerSettings settings) {
+
         // If player is offline or doesn't have a compass, do nothing
         if (!player.isOnline() || !player.getInventory().contains(COMPASS)) {
             return;
         }
         
-        final var messageText = createCompassMessage(player, config);
+        final var messageText = createCompassMessage(player, config, settings);
         final var messageComponent = TextComponent.fromLegacyText(messageText);
         final var inventory = player.getInventory();
 

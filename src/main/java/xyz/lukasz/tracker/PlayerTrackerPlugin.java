@@ -63,7 +63,9 @@ public class PlayerTrackerPlugin extends JavaPlugin {
             public void run() {
                 if (getPluginConfig() != null) {
                     getServer().getOnlinePlayers()
-                        .forEach(player -> Compasses.update(player, getPluginConfig()));
+                        .forEach(player -> Compasses.update(
+                            player, getPluginConfig(),
+                            modeManager.getPlayerSettings(player)));
                 }
             }
         };
