@@ -22,6 +22,6 @@ public final class LocationUtils {
             .getPlayers()
             .stream()
             .filter(c -> Filters.canBeTracked(player, c, config.getTracker()))
-            .min(Comparator.comparing(c -> c.getLocation().distanceSquared(playerLoc)));
+            .min(Comparator.comparingDouble(c -> c.getLocation().distanceSquared(playerLoc)));
     }
 }

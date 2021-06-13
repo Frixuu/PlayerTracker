@@ -16,12 +16,15 @@ import xyz.lukasz.tracker.TrackerMode;
 import xyz.lukasz.tracker.config.PlayerTrackerConfig;
 import xyz.lukasz.tracker.util.Compasses;
 
+import java.util.logging.Logger;
+
 @RequiredArgsConstructor
 public class PlayerInteractListener implements Listener {
 
     private final PlayerTrackerConfig config;
     private final ModeManager modeManager;
     private final Server server;
+    private final Logger logger;
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {

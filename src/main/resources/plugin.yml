@@ -3,3 +3,12 @@ name: PlayerTracker
 version: "1.0.0"
 api-version: "1.13"
 author: Frixuu
+load: POSTWORLD
+commands:
+  trackerdebug:
+    description: Debugs tracker issues
+    permission: frixuu.tracker.debug
+permissions:
+  frixuu.tracker.debug:
+    description: Allows to debug the tracker
+    default: op
