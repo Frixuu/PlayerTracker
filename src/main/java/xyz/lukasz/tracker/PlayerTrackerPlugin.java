@@ -64,7 +64,7 @@ public class PlayerTrackerPlugin extends JavaPlugin {
             new PlayerInteractListener(getPluginConfig(), modeManager, getServer(), getLogger()),
             this);
 
-        getCommand("trackerdebug").setExecutor(new DebugCommand(this, getServer(), getLogger()));
+        getCommand("trackerdebug").setExecutor(new DebugCommand(this, modeManager, getServer(), getLogger()));
 
         compassUpdater = Runnables.bukkitRunnable(() -> {
             if (getPluginConfig() != null) {
