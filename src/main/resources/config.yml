@@ -1,0 +1,16 @@
+filters:
+  hidden: 'EXCLUDE'
+  invisible: 'DEFAULT'
+  spectators: 'EXCLUDE'
+  sameTeam: 'DEFAULT'
+  sameColor: 'REQUIRE'
+messages:
+  overridden: '&cCan''t change this! (Currently overridden)'
+  nearestFound: '&e&lPlayer: &f{{name}} &e&lDistance: &f{{distance}}m'
+  nearestMissing: '"&e&lPlayer: &fNone"'
+  targetFound: '&e&lTarget: &f{{name}} &e&lDistance: &f{{distance}}m'
+  targetMissing: '"&e&lTarget missing!"'
+technical:
+  updateInterval: 15 # in ticks
+  displayMethod: 'ITEM_NAME'
+  bStats: true

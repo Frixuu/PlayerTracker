@@ -13,7 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import xyz.lukasz.tracker.ModeManager;
 import xyz.lukasz.tracker.TrackerMode;
-import xyz.lukasz.tracker.config.PlayerTrackerConfig;
+import xyz.lukasz.tracker.config.PluginConfig;
 import xyz.lukasz.tracker.util.Compasses;
 
 import java.util.logging.Logger;
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class PlayerInteractListener implements Listener {
 
-    private final PlayerTrackerConfig config;
+    private final PluginConfig config;
     private final ModeManager modeManager;
     private final Server server;
     private final Logger logger;
@@ -71,7 +71,7 @@ public class PlayerInteractListener implements Listener {
                             player.getWorld().getPlayers(),
                             player,
                             target.getName(),
-                            config.getTracker());
+                            config.getFilters());
 
                         if (newTarget.isPresent()) {
                             currentSettings.setCurrentTarget(newTarget.get().getUniqueId());

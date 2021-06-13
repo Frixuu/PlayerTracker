@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class MessageOptions {
-    public String cantChangeOverriden;
-    public String templateFound;
-    public String templateMissing;
+    public String overridden;
+    public String nearestFound;
+    public String nearestMissing;
+    public String targetFound;
+    public String targetMissing;
 }

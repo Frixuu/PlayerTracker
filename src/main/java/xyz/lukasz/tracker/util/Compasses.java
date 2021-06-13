@@ -1,15 +1,14 @@
 package xyz.lukasz.tracker.util;
 
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.lukasz.tracker.TrackerSettings;
-import xyz.lukasz.tracker.config.PlayerTrackerConfig;
-import xyz.lukasz.tracker.config.TrackerOptions;
+import xyz.lukasz.tracker.config.FilterOptions;
+import xyz.lukasz.tracker.config.PluginConfig;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,70 +36,74 @@ public final class Compasses {
      * @return A message to display.
      */
     public static @NotNull String createCompassMessage(@NotNull Player player,
-                                                       @NotNull PlayerTrackerConfig config,
+                                                       @NotNull PluginConfig config,
                                                        @NotNull TrackerSettings settings) {
 
-        String trackerText = config.getMessages().getTemplateMissing();
+        Player target = null;
+        String trackerText = "???";
 
         switch (settings.getMode()) {
             case NEAREST_PLAYER:
                 final var nearestPlayer = getNearestPlayer(player, config);
                 if (nearestPlayer.isPresent()) {
-                    Location nearestLocation = nearestPlayer.get().getLocation();
-                    player.setCompassTarget(nearestLocation);
-                    double distance = nearestLocation.distance(player.getLocation());
-                    trackerText = config.getMessages().getTemplateFound()
-                        .replace("{{name}}", nearestPlayer.get().getPlayerListName())
-                        .replace("{{distance}}", String.format("%.1f", distance))
-                        .replace("{{distanceft}}", String.format("%.1f", distance * FEET_IN_METER));
+                    target = nearestPlayer.get();
+                    trackerText = config.getMessages().getNearestFound();
+                } else {
+                    trackerText = config.getMessages().getNearestMissing();
                 }
                 break;
             case TARGET_PLAYER:
                 final var server = player.getServer();
-                var target = server.getPlayer(settings.getCurrentTarget());
+                final var targetId = settings.getCurrentTarget();
+                target = server.getPlayer(targetId);
 
                 if (target == null) {
                     final var newTarget = chooseNext(
                         player.getWorld().getPlayers(),
                         player,
                         null,
-                        config.getTracker());
+                        config.getFilters());
                     if (newTarget.isEmpty()) {
-                        trackerText = "%l%cBrak graczy!";
+                        trackerText = config.getMessages().getTargetMissing();
                         break;
                     } else {
                         target = newTarget.get();
-                        player.setCompassTarget(target.getLocation());
+                        trackerText = config.getMessages().getTargetFound();
                     }
                 } else {
-                    player.setCompassTarget(target.getLocation());
+                    trackerText = config.getMessages().getTargetFound();
                 }
 
-                final var distance = target.getLocation().distance(player.getLocation());
-                trackerText = "%r{{name}} - {{distance}}m"
-                    .replace("{{name}}", target.getName())
-                    .replace("{{distance}}", String.format("%.1f", distance))
-                    .replace("{{distanceft}}", String.format("%.1f", distance * FEET_IN_METER));
                 break;
         }
 
-        return translateAlternateColorCodes('%', trackerText);
+        if (target != null) {
+            final var targetLocation = target.getLocation();
+            player.setCompassTarget(targetLocation);
+            final var distance = targetLocation.distance(player.getLocation());
+            trackerText = trackerText
+                .replace("{{name}}", target.getName())
+                .replace("{{distance}}", String.format("%.1f", distance))
+                .replace("{{distanceft}}", String.format("%.1f", distance * FEET_IN_METER));
+        }
+
+        return translateAlternateColorCodes('&', trackerText);
     }
 
     public static Optional<? extends Player> chooseNext(
         @NotNull Collection<? extends Player> candidates,
         @NotNull Player owner,
         @Nullable String oldName,
-        TrackerOptions config) {
+        FilterOptions filters) {
 
         if (oldName == null) {
             return candidates.stream()
-                .filter(c -> Filters.canBeTracked(owner, c, config))
+                .filter(c -> Filters.canBeTracked(owner, c, filters))
                 .findAny();
         } else {
             final var sorted = candidates
                 .stream()
-                .filter(c -> Filters.canBeTracked(owner, c, config))
+                .filter(c -> Filters.canBeTracked(owner, c, filters))
                 .map(HumanEntity::getName)
                 .filter(name -> !name.equals(owner.getName()))
                 .sorted()
@@ -124,7 +127,7 @@ public final class Compasses {
     * @param player The player who will have their compass updated.
     */
     public static void update(@NotNull Player player,
-                              @NotNull PlayerTrackerConfig config,
+                              @NotNull PluginConfig config,
                               @NotNull TrackerSettings settings) {
 
         // If player is offline or doesn't have a compass, do nothing
@@ -136,7 +139,7 @@ public final class Compasses {
         final var messageComponent = TextComponent.fromLegacyText(messageText);
         final var inventory = player.getInventory();
 
-        switch (config.getDisplayMethod()) {
+        switch (config.getTechnical().getDisplayMethod()) {
             case ACTION_BAR:
                 final var mainHand = inventory.getItemInMainHand().getType();
                 final var offHand = inventory.getItemInOffHand().getType();
