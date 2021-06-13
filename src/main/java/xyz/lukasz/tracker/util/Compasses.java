@@ -58,6 +58,7 @@ public final class Compasses {
             case TARGET_PLAYER:
                 final var server = player.getServer();
                 var target = server.getPlayer(settings.getCurrentTarget());
+
                 if (target == null) {
                     final var newTarget = chooseNext(
                         player.getWorld().getPlayers(),
@@ -69,7 +70,10 @@ public final class Compasses {
                         break;
                     } else {
                         target = newTarget.get();
+                        player.setCompassTarget(target.getLocation());
                     }
+                } else {
+                    player.setCompassTarget(target.getLocation());
                 }
 
                 final var distance = target.getLocation().distance(player.getLocation());
