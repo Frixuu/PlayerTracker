@@ -78,13 +78,19 @@ public final class Compasses {
         }
 
         if (target != null) {
-            final var targetLocation = target.getLocation();
-            player.setCompassTarget(targetLocation);
-            final var distance = targetLocation.distance(player.getLocation());
-            trackerText = trackerText
-                .replace("{{name}}", target.getName())
-                .replace("{{distance}}", String.format("%.1f", distance))
-                .replace("{{distanceft}}", String.format("%.1f", distance * FEET_IN_METER));
+            trackerText = trackerText.replace("{{name}}", target.getName());
+            if (player.getWorld().equals(target.getWorld())) {
+                final var targetLocation = target.getLocation();
+                player.setCompassTarget(targetLocation);
+                final var distance = targetLocation.distance(player.getLocation());
+                trackerText = trackerText
+                    .replace("{{distance}}", String.format("%.1f", distance))
+                    .replace("{{distanceft}}", String.format("%.1f", distance * FEET_IN_METER));
+            } else {
+                trackerText = trackerText
+                    .replace("{{distance}}", "???")
+                    .replace("{{distanceft}}", "???");
+            }
         }
 
         return translateAlternateColorCodes('&', trackerText);
